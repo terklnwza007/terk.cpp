@@ -1,49 +1,50 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-void DFS(int node, vector<vector<int>> &adjlist, vector<bool> &check)
+
+int size;
+int count = 0;
+
+void add_adj(vector<vector<int>> &adj, int u, int v)
 {
-    check[node] = true;
-    for (int i = 0; i < adjlist[node].size(); i++)
+    adj[u - 1].push_back(v - 1);
+    adj[v - 1].push_back(u - 1);
+}
+
+void dfs(vector<bool> &check, int i, vector<vector<int>> &adj)
+{
+    check[i] = true;
+    for (int it : adj[i])
     {
-        int parent = adjlist[node][i];
-        if (!check[parent])
-            DFS(parent, adjlist, check);
+        if (!check[it])
+            dfs(check, it, adj);
     }
 }
 
-int countcomponent(int n, vector<vector<int>> &adjList)
+void connected_component(vector<vector<int>> &adj)
 {
-
-    vector<bool> check(n, false);
-
-    int count = 0;
-
-    for (int i = 0; i < n; i++)
+    vector<bool> check(size, false);
+    for (int i = 0; i < size; ++i)
     {
-        if (check[i] == false)
+        if (!check[i])
         {
-            DFS(i, adjList, check);
+            dfs(check, i, adj);
             count++;
         }
     }
-
-    return count;
 }
 
 int main()
 {
-    int n, m;
-    cin >> n >> m;
-    vector<vector<int>> adjList(n);
-
-    for (int i = 0; i < m; ++i)
+    int line;
+    cin >> size >> line;
+    int u, v;
+    vector<vector<int>> adj(10000);
+    for (int i = 0; i < line; ++i)
     {
-        int u, v;
         cin >> u >> v;
-        adjList[u - 1].push_back(v-1);
-        adjList[v - 1].push_back(u-1);
+        add_adj(adj, u, v);
     }
-    
-    cout << countcomponent(n, adjList);
-} 
+    connected_component(adj);
+    cout << count;
+}
